@@ -1,0 +1,111 @@
+﻿Datum: 30.11.2013   Test Version Transistortester (AVR) Version 1.09k
+
+Achtung: 
+=======
+Ab der Version 1.05k wird in Pausen der Schafzustand (sleep) des
+ATmega168/328 benutzt. Dadurch schwankt die Stromaufnahme stärker als in
+den vorigen Versionen. Falls es hierbei zu Problemen kommt, sollte man
+die Abblockung der VCC Spannung überprüfen. Eine direkte Abblockung
+mit keramischen 100nF Kondensatoren in unmittelbarer Nähe der Versorgungsanschlüsse
+des ATmega sind erforderlich für einen einwandfreien Betrieb.
+Sie können auch die Benutzung des Schlafzustandes mit der Makefile Option
+INHIBIT_SLEEP_MODE verhindern.
+Die Behandlung der Ladezeitmessung mit dem Schlafzustand war bei den Versionen
+ab 1.05k nicht fehlerfrei implementiert. In der Version 1.09k habe ich keine
+Fehler im Zusammenhang mit dem Zählerüberlauf feststellen können.
+
+Für alle, die selber experimentieren wollen,hier eine kurze Anleitung,
+wie man die 1Mhz und 8MHz Version selbst erzeugen kann.
+Selbstverständlich kann ich keine Gewährleistung für die Funktionsfähigkeit geben.
+
+Die Software für 8 Mhz Takt und 1 MHz Takt werden mit der gleichen Software
+(Sourcecode ist selbstanpassend!) erzeugt.
+Der 8 MHz Betrieb wird empfohlen, weil alle letzten Tests mit
+dieser Taktrate durchgeführt wurden.
+
+Mit einem Linux Betriebssystem mit installierten GNU Tools und
+installiertem Programm avrdude braucht man nur 4 Schritte
+um einen fertigen ATmega microcontroller zu erhalten.
+
+1.) Editieren der Makefile (~./Sourcecode/default/Makefile) 
+    Den Eintrag OP_MHZ=1 auf OP_MHZ=8 ändern, sowie den Programmer (PROGRAMMER=),
+    die Schnittstelle des Programmers (PORT=) und den AVR-Typ (PARTNO=) einstellen,
+    falls man avrdude für das Programmieren benutzen möchte
+
+2.) make aufrufen!
+    Im Verzeichnis ~./trunk/default wird "make" aufgerufen.
+    Ein vorheriger "make clean" Aufruf ist nicht erforderlich.
+
+3.) Das Programmiergerät anschließen und mit dem Aufruf "make upload" die Programmierdaten
+    über das ISP-Interface in den AVR brennen.
+
+4.) Bei Bedarf mit dem Aufruf "make fuses-crystal" den AVR für den Betrieb mit Quarz konfigurieren.
+    Den ISP-Stecker jetzt wieder entfernen.
+
+Für eine Quarz-Oszillator-Betrieb ist es erforderlich einen 8MHz Quarz an Pin 9 und Pin 10
+des AVRs anzuschliessen.
+Bei der ATmega168 Linie ist auch der Quarz-betriebene 1MHz Betrieb möglich, es wird dann
+ein Vorteiler für die 8 MHz Clock programmiert.
+
+Wenn man Strom sparen möchte, kann man auch mit dem "make fuses-crystal-lp" Aufruf
+den Low Power Crystal Oscillator Mode benutzen. Mit dem Standard fuses-crystal Aufruf
+wird der Full Swing Oscillator Mode programmiert.
+Bei der ATmega8 Linie müsste für einen 1MHz Quarz-Betrieb auch ein 1MHz Quarz
+angeschlossen werden, wegen der besseren Auflösung der Kondensatormessung und
+Induktivitätsmessung ist aber sowieso der 8MHz Betrieb zu bevorzugen.
+Beim Setzen der Clockfrequenz (fuses) bitte äußerst sorgfältig arbeiten, man kann sie 
+sehr leicht so ändern, daß keine (ISP-)Programmierung mehr möglich ist!!!
+================================================
+Achtung bei Benutzung des Sleep Mode ohne Quarz!
+================================================
+Bei der Benutzung der Software ohne Quarz (make fuses) muß der Parameter RESTART_DELAY_TICS=6
+in der Makefile gesetzt werden wegen einem unterschiedlichen Aufwach-Verhaltens beim Sleep Mode.
+================================================
+
+Ausser einigen ATmega8 (PARTNO=m8) habe ich einige ATmega168 (PARTNO=m168) und
+ATmega328 Versionen (PARTNO=m328) getestet.
+Die Version mit allen Funktionen läuft nur noch auf einem ATmega168 oder ATmega328.
+Ein Wechsel vom ATmega8 auf einen ATmega168 oder ATmega328 ist ohne
+Hardwareänderung möglich.
+Ich rate dringend zu einem Wechsel vom ATmega8 zu einem ATmega168 oder besser
+einem ATmega328 Prozessor.
+
+Im Unterverzeichnis trunk/mega8 sind jetzt die Programmfiles für einen ATmega8 ohne die
+Selbsttestfunktion (ohne AUTOSCALE_ADC) abgelegt, ebenfalls in der 8MHz Version.
+
+Das Unterverzeichnis trunk/mega168_strip_grid enthält die fertigen Programmierdaten
+für einen ATmega168 auf einer Streifenleiter Platine mit einem geänderten Layout.
+Sie können mit der geänderten Pin-Belegung nicht die Standard-Software benutzen!
+
+Die jeweilige Makefile ist in den Unterverzeichnissen auch vorhanden und kann 
+unmittelbar benutzt werden. 
+
+Meine Tests habe ich mit dem Quarz-Oszillator (bestückter Quarz) durchgeführt.
+Ein Betrieb mit 8Mhz RC-Generator (ohne Quarz) sollte aber ebenfalls möglich sein.
+Normalerweise sind die Fuses auf 1 Mhz Betrieb voreingestellt.
+Wegen der besseren Auflösung bei der Kapazitätsmessung bevorzuge ich die 8MHz Variante.
+So sind auch die Programmfiles für den ATmega168 für 8MHz Takt erzeugt (Verzeichnis trunk/default)!
+
+Die vorkompilierten Daten für den ATmega168 sind auch auf einem ATmega328 lauffähig!
+
+Benutzung der mega168 oder mega328 Versionen:
+=============================================
+Sie sollten einen Selbsttest mit der Selbstkalibration des Testers durchführen, um bessere
+Meßresultate der Kapazitätsmessung und der Widerstandsmessung zu erreichen,
+besonders mit der AUTOSCALE_ADC Option.
+Für die Selbstkalibration benötigen Sie einen externen Kondensator hoher Güte mit
+wenigstens 100 nF (20 uF maximal).
+Dieser Kondensator muß nach der Messung des Null-Offsets der Kondensatormessung (C0) an
+Pin 1 und Pin 3 des Testers angeschlossen werden, wenn der Text "1--||--3 >100nF" angezeigt wird.
+Der neue Nulloffset bleibt für die nächsten Messungen wirksam, bis der nächste Selbsttest
+den Nulloffset auf den Anfangswert zurücksetzt.
+Die Messung des ESR-Wertes ist sehr schwierig, da die Widerstandauflösung 0.01 Ohm beträgt.
+Die Steckverbindungen, die Platine, das ATmega Exemplar und die Kabelwiderstände haben
+Einfluß auf das Meßergebnis!
+
+
+Ich bin an Rückmeldungen von Problemen und Fehlern durchaus interessiert, entweder im
+Forum oder auch direkt per Email (kh_kuebbeler@web.de).
+
+Viele Grüße und viel Glück
+Karl-Heinz Kübbeler
