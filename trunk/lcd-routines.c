@@ -442,10 +442,10 @@ void lcd_init(void) {
    HW_LCD_RES_PORT |= _BV(HW_LCD_RES_PIN);	// switch RES to VCC
  #endif  /* LCD_SPI_OPEN_COL */
    wait_about100ms();  // Wait for 100 ms after RESET
-#elif (LCD_INTERFACE_MODE == MODE_I2C)   /* ! MODE_SPI || MODE_3LINE */
+#elif (LCD_INTERFACE_MODE == MODE_I2C) || (LCD_INTERFACE_MODE == MODE_I2C_CHAR)   /* ! MODE_SPI || MODE_3LINE */
    i2c_init();		// init the I2C interface
    wait_about100ms();	// Set LCD for 100 ms into RESET
-#elif (LCD_INTERFACE_MODE == MODE_7920_SERIAL) /* ! MODE_SPI || MODE_3LINE || MODE_I2C */
+#elif (LCD_INTERFACE_MODE == MODE_7920_SERIAL) /* ! MODE_SPI || MODE_3LINE || MODE_I2C || MODE_I2C_CHAR */
    HW_LCD_B0_PORT  &= ~_BV(HW_LCD_B0_PIN); // LCD B0 = 0
    HW_LCD_B0_DDR   |= _BV(HW_LCD_B0_PIN);  // LCD SI is Output
    HW_LCD_EN_PORT  &= ~_BV(HW_LCD_EN_PIN); // LCD EN = 0
@@ -455,8 +455,8 @@ void lcd_init(void) {
 //   wait1ms();
 //   HW_LCD_RESET_PORT |= _BV(HW_LCD_RESET_PIN); // set reset high
    wait100ms();		// wait after power up reset
-#elif (LCD_INTERFACE_MODE == MODE_PARALLEL) /* ! MODE_SPI || MODE_3LINE || MODE_I2C || MODE_7920_SERIAL */
- /* ! MODE_SPI || MODE_3LINE || MODE_I2C || MODE_7920_SERIAL */
+#elif (LCD_INTERFACE_MODE == MODE_PARALLEL) 
+ /* ! MODE_SPI || MODE_3LINE || MODE_I2C || MODE_I2C_CHAR || MODE_7920_SERIAL */
  #ifdef LCD_ST_TYPE
    wait100ms();		// wait after power up reset
    lcd_command(0x22); // set to 4-bit mode for graphic display
@@ -767,11 +767,11 @@ void lcd_init(void) {
    wait_about100ms();
    // to initialise, send 3 times to be sure to be in 8 Bit mode
 
- #if LCD_INTERFACE_MODE == MODE_PARALLEL
+ #if (LCD_INTERFACE_MODE == MODE_PARALLEL) || (LCD_INTERFACE_MODE == MODE_I2C_CHAR)
    lcd_command(0x33);			// switch to 8-bit
    lcd_command(0x32);			// switch to 4-bit
  #else
-   lcd_command(0x3a);			// switch to 8-bit for I2C or SPI
+   lcd_command(0x3a);			// switch to 8-bit  SPI
  #endif
    wait_about10ms();
  #ifdef LCD_DOGM
@@ -830,7 +830,7 @@ void lcd_init(void) {
    lcd_command(CMD_DISPLAY_ON);			// 0x08 Display on, no Cursor, No blink
    lcd_command(CMD_SetEntryMode | 0x02);	// 0x06 increment / no Scroll    
 // - - - - - - - - - - - - - - - - 
- #else
+ #else  /* No DOGM */
    // initialize sequence with OLED display
    lcd_command(CMD_SetIFOptions | MODE_8BIT);		// Add for OLED
    lcd_command(CMD_SetIFOptions | MODE_8BIT);		// Add for OLED

@@ -77,7 +77,11 @@
 
 /* For normal I2C mode use 5us wait time, but SSD1306 is faster, the cycle time is specified as 2.5us. */
 /* So we use 2us, which results to a cycle time of >4us */
+#if LCD_INTERFACE_MODE == MODE_I2C_CHAR
+#define WAIT_I2C wait5us
+#else
 #define WAIT_I2C wait2us    
+#endif
 #define release_sda	cbi	(_SFR_IO_ADDR(HW_LCD_SDA_PORT) - 1), HW_LCD_SDA_PIN
 #define set_low_sda	sbi	(_SFR_IO_ADDR(HW_LCD_SDA_PORT) - 1), HW_LCD_SDA_PIN
 #define release_scl	cbi	(_SFR_IO_ADDR(HW_LCD_SCL_PORT) - 1), HW_LCD_SCL_PIN
@@ -521,6 +525,8 @@ _lcd_hw_write:
 	rcall	WAIT_I2C
 	ldi	preg_1, (LCD_I2C_ADDR*2)
 	rcall	i2c_send	; write I2C address
+;	send 0x80 followed by 8-Bit data for command mode or
+;       0x40 followed by 8-Bit data for data mode.
 	pop	preg_2
 	ldi	preg_1,0x80	; send command type
 	sbrc	preg_2,0	; skip if bit 0 is unset
@@ -535,53 +541,63 @@ _lcd_hw_write:
 	release_sda		; pullup move the sda signal to high, STOP
 	rcall	WAIT_I2C
 	ret		// return _lcd_hw_write
-;
+#elif (LCD_INTERFACE_MODE == MODE_I2C_CHAR)
+;       the upper 4 bit are connected to the LCD-Data D4-D7 and
+;       Bit 0 is connected to RS
+;       Bit 1 is connected to R/W
+;       Bit 2 is connected to E
+;       Bit 3 is used for Background Light of LCD
+;      
+;	With this connection we need at least four I2C transfers to
+;	load one 8 Bit Data to the LCD-Controller
+_lcd_hw_write:
+	push 	preg_2
+        push	preg_1		; save data/command
+	andi	preg_2,0xf0	; only upper nipple
+	ori	preg_2,0x0c	; LDC-E and Background to high
+;	sbrc	preg_1,0	; data/command
+;	ori	preg_2,0x01	; data
+	or	preg_2,preg_1	; direct or (same position of R/W bit)
+	push	preg_2
+	rcall	i2c_nipple	; set first 4-Bit data
+	pop	preg_2
+	andi	preg_2,0xfb	; LCD-E to low
+	rcall	i2c_nipple	; force data read from LCD-controller (first 4 Bit)
+	pop	preg_1		; data/command
+	pop	preg_2		; data
+	swap	preg_2		; lower bits to upper nipple
+	andi	preg_2,0xf0	; only shifted lower nipple
+	ori	preg_2,0x0c	; LDC-E and Background to high
+;	sbrc	preg_1,0	; data/comand
+;	ori	preg_2,0x01	; 1=data
+	or	preg_2,preg_1	; direct or (same position of R/W bit)
+	push	preg_2
+	rcall	i2c_nipple	; set second 4-Bit data
+	pop	preg_2		
+	andi	preg_2,0xfb	; LCD-E to low
+	rcall	i2c_nipple	; force data read from LCD-controller (lower 4 Bit)
+	ret
+
 ;===================================================
-i2c_send:
-	sec			;set carry
-	rol	preg_1		; shift carry to r24 bit 0 and bit 7 of r24 to carry
-i2c_wf:
-	set_low_scl		; scl signal to low, data change
-	brcc	wr0
-			; carry was set
-	release_sda		; pullup move the sda signal to high
-	rjmp	wr1
-wr0:
-	set_low_sda		; set the sda signal to low
-wr1:
-	rcall	WAIT_I2C	; wait defined time
-	release_scl		; pullup move the scl signal to high
-	rcall	WAIT_I2C	; wait defined time
-	lsl	preg_1
-	brne	i2c_wf
-; 8 bit are transfered
-	set_low_scl		; scl signal to low, data change
-	release_sda		; give sda free
-	rcall	WAIT_I2C	; wait defined time
-	release_scl		; pullup move the scl signal to high, ack cycle
-loop:
-	sbis	HW_LCD_SCL_IN, HW_LCD_SCL_PIN
-	rjmp	loop		; wait for releasing SCL
-	; r24 is zero, return 0
-	sbic	HW_LCD_SDA_IN, HW_LCD_SDA_PIN
-	ldi	preg_1,1		; if SDA is returned high, answer 1
-	rcall	WAIT_I2C	; wait defined time
-	set_low_scl
-	rcall	WAIT_I2C	; wait defined time
-	ret
-	.endfunc
-
-       .global	i2c_init
-       .func	i2c_init
-       .extern	wait5us
-i2c_init:
-	release_sda
+;	one byte I2C transfer with address
+i2c_nipple:
+	push	preg_2
 	release_scl
-	cbi	HW_LCD_SDA_OUT, HW_LCD_SDA_PIN	; set output to 0, no pull up
-	cbi	HW_LCD_SCL_OUT, HW_LCD_SCL_PIN	; set output to 0, no pull up
-
-	ret
-	.endfunc
+	rcall	WAIT_I2C
+	set_low_sda		; set START bit
+	rcall	WAIT_I2C
+	ldi	preg_1, (LCD_I2C_ADDR*2)
+	rcall	i2c_send	; write I2C address
+	pop	preg_1		; load save data to preg_1
+	rcall	i2c_send	; write I2C data
+	set_low_sda		; set the sda signal to low STOP
+	rcall	WAIT_I2C
+	release_scl		; pullup move the scl signal to high
+	rcall	WAIT_I2C
+	release_sda		; pullup move the sda signal to high, STOP
+	rcall	WAIT_I2C
+	ret		// return i2c_nipple
+;
 #elif (LCD_INTERFACE_MODE == MODE_7108_SERIAL)
 ;---------------------------------------------------------------------------------
 _lcd_hw_write:
@@ -775,6 +791,57 @@ _lcd_hw_write_exit:
                ret		; end _lcd_hw_write
        .endfunc
 #endif /* LCD_INTERFACE_MODE */
+;
+#if (LCD_INTERFACE_MODE == MODE_I2C) || (LCD_INTERFACE_MODE == MODE_I2C_CHAR)
+;===================================================
+i2c_send:
+;	Input: preg_1 = data to send
+;       Return: preg_1 = 0/1
+	sec			;set carry
+	rol	preg_1		; shift carry to r24 bit 0 and bit 7 of r24 to carry
+i2c_wf:
+	set_low_scl		; scl signal to low, data change
+	brcc	wr0
+			; carry was set
+	release_sda		; pullup move the sda signal to high
+	rjmp	wr1
+wr0:
+	set_low_sda		; set the sda signal to low
+wr1:
+	rcall	WAIT_I2C	; wait defined time
+	release_scl		; pullup move the scl signal to high
+	rcall	WAIT_I2C	; wait defined time
+	lsl	preg_1
+	brne	i2c_wf
+; 8 bit are transfered
+	set_low_scl		; scl signal to low, data change
+	release_sda		; give sda free
+	rcall	WAIT_I2C	; wait defined time
+	release_scl		; pullup move the scl signal to high, ack cycle
+loop:
+	sbis	HW_LCD_SCL_IN, HW_LCD_SCL_PIN
+	rjmp	loop		; wait for releasing SCL
+	; r24 is zero, return 0
+	sbic	HW_LCD_SDA_IN, HW_LCD_SDA_PIN
+	ldi	preg_1,1		; if SDA is returned high, answer 1
+	rcall	WAIT_I2C	; wait defined time
+	set_low_scl
+	rcall	WAIT_I2C	; wait defined time
+	ret
+	.endfunc
+
+       .global	i2c_init
+       .func	i2c_init
+       .extern	wait5us
+i2c_init:
+	release_sda
+	release_scl
+	cbi	HW_LCD_SDA_OUT, HW_LCD_SDA_PIN	; set output to 0, no pull up
+	cbi	HW_LCD_SCL_OUT, HW_LCD_SCL_PIN	; set output to 0, no pull up
+
+	ret
+	.endfunc
+#endif
 ;----------------------------------------------------------------------
 #if (LCD_ST_TYPE == 7108)
        .global _lcd_hw_select

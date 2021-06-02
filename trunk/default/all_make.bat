@@ -91,6 +91,9 @@ make steril
 cd ../mega328_PCF8814
 echo "SubDir mega328_PCF8814"
 make steril
+cd ../mega328_20x4_I2C
+echo "SubDir mega328_20x4_I2C"
+make steril
 cd ../arduino_m2560
 echo "SubDir arduino_m2560"
 make steril

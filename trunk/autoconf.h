@@ -774,7 +774,7 @@
 #ifndef TP_OFFSET
  #define TP_OFFSET 0
 #endif
-#if  !defined(LCD_INTERFACE_MODE)  || (LCD_INTERFACE_MODE == MODE_PARALLEL)
+#if  !defined(LCD_INTERFACE_MODE)  || (LCD_INTERFACE_MODE == MODE_PARALLEL) || (LCD_INTERFACE_MODE == MODE_I2C) || (LCD_INTERFACE_MODE == MODE_I2C_CHAR)
  #define MODE_8BIT 0x00         /* 4-bit Mode */
 #else
  #define MODE_8BIT 0x10

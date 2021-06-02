@@ -1,0 +1,24 @@
+Diese Version benutzt ein Textdisplay mit 20 Zeichen in 4 Zeilen.
+Dieses LCD-Display ist über ein I2C Adapterboard mit PCF8574 Chip angeschlossen.
+Die I2C Adapterplatine empfängt 8 Bit Daten von der I2C Seite,
+die mit dem LCD wie folgt verbunden sind:
+D4-D7 ist mit LCD D4-D7 verbunden,
+D0 ist mit LCD-E verbunden,
+D1 ist mit LCD-RW verbunden,
+D2 ist mit LCD-RS verbunden und
+D3 wird benutzt, um die Hintergrundbeleuchtung des Displays einzuschalten. 
+The LCD-VEE Signal can be changed with the trimmer at the adapter board
+to select the best contrast.
+
+Das SDA Signal muß mit dem ATmega PD2 Pin verbunden werden 
+(LCD-D6 des normalen Displayanschluss, LCD-Pin 13).
+Das SCL Signal Muß mit dem ATmega PD5 Pin verbunden werden
+(LCD-E des normalen Displayanschluss, LCD-Pin 6).
+Die Standard I2C Adresse ist 0x27, kann aber mit der LCD_I2C_ADDR Variablen
+in der Makefile anders eingestellt werden.
+
+Bitt beachten Sie, daß die Hintergrundbeleuchting des LCD von der Software
+immer angeschaltet wird.
+Sie können die Hintergrundbeleuchtung abschalten, indem Sie den Jumper
+auf der I2C Adapterplatine entfernen.
+
