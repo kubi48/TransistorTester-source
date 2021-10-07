@@ -1228,6 +1228,9 @@ End of configuration
   #define LCD_CYRILLIC    // LCD_CYRILLIC is required by font.h
  #endif
 #endif
+#ifndef NO_FREQUENCY_SWITCH
+#define NO_FREQUENCY_SWITCH 0
+#endif
 #include "font.h"
 #include "autoconf.h"
 #ifdef WITH_GRAPHICS
