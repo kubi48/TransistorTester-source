@@ -184,7 +184,7 @@ End of configuration
   #ifdef WITH_ROTARY_CHECK
    const unsigned char RotaryEncoder_str[] MEM2_TEXT = "rotary encoder";
   #endif
-   const unsigned char SetCapCorr_str[] MEM2_TEXT = {'C','(',LCD_CHAR_U,'F',')','-','c','o','r','r','e','c','t','i','o','n',0};
+   const unsigned char SetCapCorr_str[] MEM2_TEXT = {'C','(',LCD_CHAR_U,'F',')','c','o','r','r','e','c','t','i','o','n',0};
    const unsigned char TURN_str[] MEM2_TEXT = "turn!";	
    const unsigned char FULLCHECK_str[] MEM2_TEXT = "Selftest";
    const unsigned char SHORT_PROBES_str[] MEM2_TEXT = "short Probes!";

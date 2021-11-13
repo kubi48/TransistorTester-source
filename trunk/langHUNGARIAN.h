@@ -48,7 +48,7 @@
   #ifdef WITH_ROTARY_CHECK
    const unsigned char RotaryEncoder_str[] MEM2_TEXT = {'P','u','l','z','u','s',LCD_CHAR_INSEP,'k',o_acute,'d','o','l'o_acute,0};
   #endif
-   const unsigned char SetCapCorr_str[] MEM2_TEXT = {'C','(',LCD_CHAR_U,'F',')','-','C','o','r','r','e','c','t','i','o','n',0};
+   const unsigned char SetCapCorr_str[] MEM2_TEXT = {'C','(',LCD_CHAR_U,'F',')','C','o','r','r','e','c','t','i','o','n',0};
    const unsigned char TURN_str[] MEM2_TEXT = "forgat!";
    const unsigned char FULLCHECK_str[] MEM2_TEXT = "On-teszt mod";
    const unsigned char SHORT_PROBES_str[] MEM2_TEXT = "Csatlakoztassa a csapokat!";

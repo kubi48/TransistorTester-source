@@ -47,7 +47,7 @@
   #ifdef WITH_ROTARY_CHECK
    const unsigned char RotaryEncoder_str[] MEM2_TEXT = "encoder rotativo";
   #endif
-   const unsigned char SetCapCorr_str[] MEM2_TEXT = {'C','(',LCD_CHAR_U,'F',')','-','C','o','r','r','e','c','c','i','o','n',0};
+   const unsigned char SetCapCorr_str[] MEM2_TEXT = {'C','(',LCD_CHAR_U,'F',')','C','o','r','r','e','c','c','i','o','n',0};
    const unsigned char TURN_str[] MEM2_TEXT = "rotar!";
    const unsigned char FULLCHECK_str[] MEM2_TEXT = "Calibracion...";
    const unsigned char SHORT_PROBES_str[] MEM2_TEXT = "Cortocircuite las puntas!";
