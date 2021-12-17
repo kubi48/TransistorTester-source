@@ -25,10 +25,8 @@ CFLAGS = -Wall
 PARTNO = m328p
 
 # include HardwareSerial functions
-WITHOUT_LCD = 1
 BAUD_RATE = 115200
 CFLAGS += -DWITH_HARDWARE_SERIAL 
-#CFLAGS += -DBAUDRATE=115200
 CFLAGS += -DBAUDRATE=$(BAUD_RATE)
 
 # The WITH_MENU option enables a dialog to choose some additional functions.
