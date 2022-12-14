@@ -1015,6 +1015,24 @@
     #define HW_LCD_B6_PIN          3
     #define HW_LCD_B7_PORT         PORTD
     #define HW_LCD_B7_PIN          2
+   #elif STRIP_GRID_BOARD == 8
+	/* special layout with inverted LCD-data connection */
+ 
+    #define HW_LCD_EN_PORT         PORTD
+    #define HW_LCD_EN_PIN          5
+
+    #define HW_LCD_RS_PORT         PORTD
+    #define HW_LCD_RS_PIN          4
+
+ 
+    #define HW_LCD_B4_PORT         PORTD
+    #define HW_LCD_B4_PIN          3
+    #define HW_LCD_B5_PORT         PORTD
+    #define HW_LCD_B5_PIN          2
+    #define HW_LCD_B6_PORT         PORTD
+    #define HW_LCD_B6_PIN          1
+    #define HW_LCD_B7_PORT         PORTD
+    #define HW_LCD_B7_PIN          0
    #else
   		/* strip grid layout with 4-bit parallel interface and mega8/168/328 */
     #define HW_LCD_EN_PORT         PORTD
