@@ -6,6 +6,11 @@
 #include <avr/io.h>
 #include "config.h"
 
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
+
+
 ;#define FAST_SERIAL_OUT	/* use no sub-function for bit setting */
 #define FAST_SPI_OUTPUT
        .section .text
@@ -73,7 +78,6 @@
 #define set_pclk_high            sbi             _SFR_IO_ADDR(HW_LCD_PCLK_PORT), HW_LCD_PCLK_PIN
 #define set_pclk_output          sbi             (_SFR_IO_ADDR(HW_LCD_PCLK_PORT) - 1), HW_LCD_PCLK_PIN
 
-#define RCALL rcall
 
 /* For normal I2C mode use 5us wait time, but SSD1306 is faster, the cycle time is specified as 2.5us. */
 /* So we use 2us, which results to a cycle time of >4us */
@@ -133,10 +137,10 @@ clr_rs:
 set_sce:
 	set_rs_low
 	set_rs_output		// SCE to GND;
-	rcall	wait1us
+	ACALL	wait1us
 	set_en_input
 	set_en_high		// enable en pullup
-	rcall	wait1us
+	ACALL	wait1us
   #else
 	sbrs    preg_1, 0
 	rjmp	clr_rs
@@ -147,7 +151,7 @@ clr_rs:
 	set_rs_low
 	set_rs_output		// set B0 for RS to GND
 fini_rs:
-	rcall	wait1us
+	ACALL	wait1us
    #endif
 
 	; Send bit-7
@@ -174,11 +178,11 @@ fini_rs:
 	; Send bit-0
         ROL	preg_2		// shift B0 to carry
         rcall	shift_out
-	rcall	wait1us
+	ACALL	wait1us
 	set_en_low
 	set_en_output		// set en/clk to GND
   #if (LCD_INTERFACE_MODE == MODE_3LINE)
-//	rcall	wait1us
+//	ACALL	wait1us
 	set_rs_input		// SCE to  high
 	set_rs_high		// enable pullup
   #endif
@@ -209,7 +213,7 @@ clr_bit:
 fini_bit:
 	set_en_input
 	set_en_high		// enable en/clk pullup
-	rcall	wait1us
+	ACALL	wait1us
 	ret
  #else /* no LCD_SPI_OPEN_COL */
   #ifdef FAST_SPI_OUTPUT
@@ -383,128 +387,128 @@ _lcd_hw_write:
 	set_en_low
 	set_en_output		; enable output mode
 
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
-        RCALL	four_bits	; output four times 1  
+        rcall	four_bits	; output four times 1  
 	set_b0_low		; RW to write
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	sbrc    preg_1, 0
 	set_b0_high		; data mode
 	sbrs    preg_1, 0
 	set_b0_low		; instruction mode
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 				; first 8 bit transfer finished
  #if (LCD_INTERFACE_MODE == MODE_7920_SERIAL)
   ; output highest bit first
         sbrc    preg_2, 7
 	 set_b0_high		; bit 7 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 6
 	 set_b0_high		; bit 6 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 5
 	 set_b0_high		; bit 5 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 4
 	 set_b0_high		; bit 4 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
-	RCALL	four_bits	; output 4 times 0
+	rcall	four_bits	; output 4 times 0
 				; the upper 4-bit are followed by 4 x 0
 	set_b0_low
         sbrc    preg_2, 3
 	 set_b0_high		; bit 3 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 2
 	 set_b0_high		; bit 2 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 1
 	 set_b0_high		; bit 1 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 0
 	 set_b0_high		; bit 0 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
-	RCALL	four_bits	; output 4 times 0
+	rcall	four_bits	; output 4 times 0
 				; the lower 4-bit are followed by 4 x 0
  #else		/* (LCD_INTERFACE_MODE == MODE_1803_SERIAL) */
   ; output lowest bit first
         sbrc    preg_2, 0
 	 set_b0_high		; bit 0 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 1
 	 set_b0_high		; bit 1 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 2
 	 set_b0_high		; bit 2 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 				; the upper 4-bit are followed by 4 x 0
 	set_b0_low
         sbrc    preg_2, 3
 	 set_b0_high		; bit 3 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
-	RCALL	four_bits	; output 4 times 0
+	rcall	four_bits	; output 4 times 0
 				; the lower 4-bit are followed by 4 x 0
 
 	set_b0_low
         sbrc    preg_2, 4
 	 set_b0_high		; bit 4 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 5
 	 set_b0_high		; bit 5 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 6
 	 set_b0_high		; bit 6 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
         sbrc    preg_2, 7
 	 set_b0_high		; bit 7 == 1
-	RCALL	toggle_en	; set en high and low
+	rcall	toggle_en	; set en high and low
 
 	set_b0_low
-	RCALL	four_bits	; output 4 times 0
+	rcall	four_bits	; output 4 times 0
 				; the upper 4-bit are followed by 4 x 0
  #endif
-	RCALL	wait50us
-	RCALL	wait30us	; at least 72 us delay
+	ACALL	wait50us
+	ACALL	wait30us	; at least 72 us delay
 	ret		// return _lcd_hw_write
 	.endfunc
 
 /* output 4 times the same bit */
 four_bits:
-	RCALL toggle_en
-	RCALL toggle_en
-	RCALL toggle_en
-	RCALL toggle_en
+	rcall toggle_en
+	rcall toggle_en
+	rcall toggle_en
+	rcall toggle_en
 	ret
 
 toggle_en:
@@ -520,9 +524,9 @@ _lcd_hw_write:
 	push 	preg_2
         push	preg_1		; save data/command
 	release_scl
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	set_low_sda		; set START bit
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	ldi	preg_1, (LCD_I2C_ADDR*2)
 	rcall	i2c_send	; write I2C address
 ;	send 0x80 followed by 8-Bit data for command mode or
@@ -535,11 +539,11 @@ _lcd_hw_write:
 	pop	preg_1		;restore data from parameter
 	rcall	i2c_send	; write the data
 	set_low_sda		; set the sda signal to low STOP
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	release_scl		; pullup move the scl signal to high
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	release_sda		; pullup move the sda signal to high, STOP
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	ret		// return _lcd_hw_write
 #elif (LCD_INTERFACE_MODE == MODE_I2C_CHAR)
 ;       the upper 4 bit are connected to the LCD-Data D4-D7 and
@@ -583,19 +587,19 @@ _lcd_hw_write:
 i2c_nipple:
 	push	preg_2
 	release_scl
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	set_low_sda		; set START bit
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	ldi	preg_1, (LCD_I2C_ADDR*2)
 	rcall	i2c_send	; write I2C address
 	pop	preg_1		; load save data to preg_1
 	rcall	i2c_send	; write I2C data
 	set_low_sda		; set the sda signal to low STOP
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	release_scl		; pullup move the scl signal to high
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	release_sda		; pullup move the sda signal to high, STOP
-	rcall	WAIT_I2C
+	ACALL	WAIT_I2C
 	ret		// return i2c_nipple
 ;
 #elif (LCD_INTERFACE_MODE == MODE_7108_SERIAL)
@@ -620,7 +624,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 6
@@ -630,7 +634,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 5
@@ -640,7 +644,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 4
@@ -650,7 +654,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 3
@@ -660,7 +664,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 2
@@ -670,7 +674,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 1
@@ -680,7 +684,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
 
         sbrc    preg_2, 0
@@ -690,7 +694,7 @@ _lcd_hw_write:
 	set_clk_low
 	set_b0_low
  #else
-	RCALL	toggle_clk	; set clk high and low
+	rcall	toggle_clk	; set clk high and low
  #endif
         ; all 8 bit are loaded to the 74HC164 output
 	set_pclk_high		; set parallel clk high and low
@@ -700,13 +704,13 @@ _lcd_hw_write:
         set_rs_output		; if RS is set to same as B0, RS is allready output
 	sbrc    preg_1, 0
 	set_rs_high		; data mode
-	RCALL	wait1us		; hold the setup time of RS
+	call	wait1us		; hold the setup time of RS
 
 	set_en_high
-	RCALL	wait1us
+	call	wait1us
 	set_en_low
-;	RCALL	wait30us	; at least 30 us delay
-	RCALL	wait10us	; at least 10 us delay
+;	call	wait30us	; at least 30 us delay
+	call	wait10us	; at least 10 us delay
 	ret
 	.endfunc
 
@@ -754,11 +758,11 @@ _lcd_hw_write:
 
                nop			; wait for data setup time
                set_en_low		; force data read from LCD controller
-               RCALL    wait1us
+               ACALL   wait1us
 
                ; skip sending low nibble for init commands
                sbrc    preg_1, 7
-                       rjmp _lcd_hw_write_exit
+               rjmp	_lcd_hw_write_exit
 
                ; Send low nibble
                set_en_high
@@ -780,12 +784,12 @@ _lcd_hw_write:
                nop			; wait for data setup time
                set_en_low		; force data read from LCD controller
  #if (LCD_ST_TYPE == 7920)
-               RCALL    wait50us
+               call    wait50us
  #endif
  #ifdef SLOW_LCD
-               RCALL    wait50us
+               ACALL   wait50us
  #else
-               RCALL    wait1us
+               ACALL   wait1us
  #endif
 _lcd_hw_write_exit:
                ret		; end _lcd_hw_write
@@ -808,15 +812,15 @@ i2c_wf:
 wr0:
 	set_low_sda		; set the sda signal to low
 wr1:
-	rcall	WAIT_I2C	; wait defined time
+	ACALL	WAIT_I2C	; wait defined time
 	release_scl		; pullup move the scl signal to high
-	rcall	WAIT_I2C	; wait defined time
+	ACALL	WAIT_I2C	; wait defined time
 	lsl	preg_1
 	brne	i2c_wf
 ; 8 bit are transfered
 	set_low_scl		; scl signal to low, data change
 	release_sda		; give sda free
-	rcall	WAIT_I2C	; wait defined time
+	ACALL	WAIT_I2C	; wait defined time
 	release_scl		; pullup move the scl signal to high, ack cycle
 loop:
 	sbis	HW_LCD_SCL_IN, HW_LCD_SCL_PIN
@@ -824,9 +828,9 @@ loop:
 	; r24 is zero, return 0
 	sbic	HW_LCD_SDA_IN, HW_LCD_SDA_PIN
 	ldi	preg_1,1		; if SDA is returned high, answer 1
-	rcall	WAIT_I2C	; wait defined time
+	ACALL	WAIT_I2C	; wait defined time
 	set_low_scl
-	rcall	WAIT_I2C	; wait defined time
+	ACALL	WAIT_I2C	; wait defined time
 	ret
 	.endfunc
 

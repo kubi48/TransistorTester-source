@@ -5,17 +5,20 @@
 #include <avr/common.h>
 #include "config.h"
 
+; The text constant AJMP is defined in autoconf.h as rjmp if FLASHEND is less or equal 0x1fff,
+; otherwise AJMP is defined as jmp
+; Please note, that jmp can be replaced with rjmp by the avr-gcc optimizing option --relax !!
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise RCALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
+
 .GLOBAL u2lcd
 .GLOBAL u2lcd_space
 
  .extern lcd_data
  .extern lcd_string
- .extern lcd_space
 
  .func i2lcd
-
-; use allways rcall for nearby functions
-#define RCALL rcall
 
 
  .section .text
@@ -32,7 +35,7 @@ i2lcd:			;	void i2lcd(int iw)
         push	r24		; save r24:r25
         push	r25
  	ldi	r24,'-'		; 45
- 	RCALL	lcd_data	; lcd_data('-'); uses r22
+ 	ACALL	lcd_data	; lcd_data('-'); uses r22
         pop	r25		; recall r25:r24
         pop	r24		; old r24
         com	r25
@@ -48,7 +51,7 @@ to_lcd:			;	void i2lcd(uint16_t iw)
  	ldi	r20, 10
  	ldi	r21, 0x00	; 0
  	ACALL	utoa		; utoa(iw, outval, 10);	//output voltage to string
- 	RCALL	lcd_string	;lcd_string(utoa(iw, outval, 10));	//output correction voltage
+ 	ACALL	lcd_string	;lcd_string(utoa(iw, outval, 10));	//output correction voltage
 
  	ret
 #endif
@@ -56,13 +59,13 @@ to_lcd:			;	void i2lcd(uint16_t iw)
 #if FLASHEND > 0x1fff
 .GLOBAL i2lcd_space
 i2lcd_space:
-	RCALL	i2lcd
+	rcall	i2lcd
 	rjmp	space_ret	; use return from u2lcd_space
 
 u2lcd_space:
-	RCALL	i2lcd
+	rcall	i2lcd
 space_ret:
-;	RCALL    lcd_space
+;	rcall    lcd_space
 ;	ret
 #endif
  .endfunc
@@ -72,7 +75,7 @@ space_ret:
 .func lcd_space
 lcd_space:
 	ldi	r24, ' '
-	RJMP	lcd_data
+	AJMP	lcd_data
 .endfunc
 
 ; Output a '-' to the LCD screen
@@ -80,7 +83,7 @@ lcd_space:
 .func lcd_minus
 lcd_minus:
 	ldi	r24, '-'
-	RJMP	lcd_data
+	AJMP	lcd_data
 .endfunc
 
 ; Output a '=' to the LCD screen
@@ -88,5 +91,5 @@ lcd_minus:
 .func lcd_equal
 lcd_equal:
 	ldi	r24, '='
-	RJMP	lcd_data
+	AJMP	lcd_data
 .endfunc

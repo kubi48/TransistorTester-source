@@ -14,6 +14,11 @@
 
 ;* Software-UART nach Atmel AVR-Application-Note AVR305
 
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
+
+
 ;***************************************************************************
 ;*
 ;* "putchar"
@@ -59,9 +64,9 @@ putchar1:
 		nop
 
 putchar2:
-                rcall   wait100us	; about 9600 Baud
+                ACALL  wait100us	; about 9600 Baud
        	#if  F_CPU >= 8000000UL
-                rcall	wait3us
+                ACALL	wait3us
 	#endif
 		lsr	Txbyte		;Get next bit
 		dec	bitcnt		;If not all bit sent

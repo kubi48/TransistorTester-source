@@ -105,9 +105,7 @@
 'D','o','k','u','m','e','n','t','a','t','i','o','n',' ',
 'i','s','t',' ','a','u','f',' ',
 'g','i','t','h','u','b','.','c','o','m','/',LCD_NO_SPACE,
-'m','i','k','r','o','c','o','n','t','r','o','l','l','e','r',LCD_NO_SPACE,
-'-','n','e','t','/','t','r','a','n','s','i','s','t','o','r',LCD_NO_SPACE,
-'t','e','s','t','e','r',' '
+'k','u','b','i','4','8'
   #endif   /* SHORT_UNCAL_MSG */
 ,0};
  #define HelpTXT

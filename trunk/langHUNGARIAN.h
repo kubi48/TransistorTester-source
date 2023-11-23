@@ -114,9 +114,7 @@
 'A',LCD_CHAR_INSEP,'s','z','o','f','t','v','e','r',LCD_CHAR_INSEP,e_acute,'s',' ','a',' ',
 'd','o','k','u','m','e','n','t',a_acute,'c','i','o',' ','a','z',' ',
 'g','i','t','h','u','b','.','c','o','m','/',LCD_NO_SPACE,
-'m','i','k','r','o','c','o','n','t','r','o','l','l','e','r',LCD_NO_SPACE,
-'-','n','e','t','/','t','r','a','n','s','i','s','t','o','r',LCD_NO_SPACE,
-'t','e','s','t','e','r',' '
+'k','u','b','i','4','8'
   #endif  /* SHORT_UNCAL_MSG */
 ,0};
  #define HelpTXT

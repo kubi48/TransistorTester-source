@@ -232,8 +232,10 @@
 // automatic selection of right assembler call type
 #if FLASHEND > 0X1FFF
  #define ACALL call
+ #define AJMP  jmp
 #else
  #define ACALL rcall
+ #define AJMP  rjmp
 #endif
 
 // automatic selection of option and parameters for different AVR s

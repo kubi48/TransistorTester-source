@@ -10,7 +10,9 @@
  #error Modify your Makefile!
 #endif
 
-#define RCALL rcall
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
 
 #define MAX_CS 150
 #define incre 6
@@ -45,10 +47,10 @@ wrelease:
         sbic    _SFR_IO_ADDR(RST_PIN_REG), RST_PIN              ; if((RST_PIN_REG & (1<<RST_PIN)))
         rjmp	no_w200
 #if INHIBIT_SLEEP_MODE
-	RCALL	wait5ms		; wait5ms();
+	ACALL	wait5ms		; wait5ms();
 #else
  	ldi	r24,  1
- 	RCALL	sleep_5ms	; wait_about5ms();
+ 	ACALL	sleep_5ms	; wait_about5ms();
 #endif
         subi	r28, 1		; kk--;
         brne	wrelease	; while (kk >= 0)
@@ -62,9 +64,9 @@ no_cnt:
         rjmp	to_ret
 wloop:
 #if INHIBIT_SLEEP_MODE
-	RCALL	wait10ms	; wait10ms();
+	ACALL	wait10ms	; wait10ms();
 #else
- 	RCALL	sleep_10ms	; wait_about10ms();
+ 	ACALL	sleep_10ms	; wait_about10ms();
 #endif
         add	r16, r16	; key_pressed += key_pressed; // multiply with 2 is shift to left
  	sbis	_SFR_IO_ADDR(RST_PIN_REG), RST_PIN		; if((RST_PIN_REG & (1<<RST_PIN))) {
@@ -113,7 +115,11 @@ to_ret:
  .GLOBAL wait_for_key_5s_line2
  .extern wait_for_key_ms
  .extern lcd_line2
+ .extern lcd_line4
  .extern lcd_clear_line
+ .extern lcd_set_cursor
+ .extern lcd_save_position
+ .extern lcd_restore_position
 
  .func wait_for_key_5s_line2
 
@@ -123,22 +129,22 @@ to_ret:
 wait_for_key_5s_line2:
 #if 0
 	ldi	r24, '+'
-	RCALL	lcd_data		; lcd_data('+');
+	ACALL	lcd_data		; lcd_data('+');
  	ldi	r24, lo8(SHORT_WAIT_TIME)	; 0x88
  	ldi	r25, hi8(SHORT_WAIT_TIME)	; 0x13
- 	RCALL	wait_for_key_ms		;wait_for_key_ms(SHORT_WAIT_TIME);
+ 	ACALL	wait_for_key_ms		;wait_for_key_ms(SHORT_WAIT_TIME);
 #if (LCD_LINES < 4)
- 	RCALL	lcd_line2	;              //2. row 
- 	RCALL	lcd_clear_line	; lcd_clear_line();	// clear the whole line
- 	RCALL	lcd_line2	;              //2. row 
+ 	ACALL	lcd_line2	;              //2. row 
+ 	ACALL	lcd_clear_line	; lcd_clear_line();	// clear the whole line
+ 	ACALL	lcd_line2	;              //2. row 
 #else
- 	RCALL	lcd_line4	;              //4. row 
- 	RCALL	lcd_clear_line	; lcd_clear_line();	// clear the whole line
- 	RCALL	lcd_line4	;              //4. row 
+ 	ACALL	lcd_line4	;              //4. row 
+ 	ACALL	lcd_clear_line	; lcd_clear_line();	// clear the whole line
+ 	ACALL	lcd_line4	;              //4. row 
 #endif
 #else
 	push	r28
-	RCALL	lcd_save_position
+	ACALL	lcd_save_position
 	mov	r28, r24		; current_line = lcd_save_position()
 	lds	r24, last_line_used
 	and	r24, r24
@@ -149,17 +155,17 @@ wait_for_key_5s_line2:
 	brne	x822			; if ((last_line_used == 1) &&(current_line == (LCD_LINES-1)))
 	ldi	r22, (LCD_LINE_LENGTH -1)
 	ldi	r24, ((LCD_LINES - 1) * PAGES_PER_LINE)
-	rcall	lcd_set_cursor		; lcd_set_cursor(((LCD_LINES - 1) * PAGES_PER_LINE), (LCD_LINE_LENGTH - 1))
+	ACALL	lcd_set_cursor		; lcd_set_cursor(((LCD_LINES - 1) * PAGES_PER_LINE), (LCD_LINE_LENGTH - 1))
 	ldi	r24, '+'		; // add a + sign at the last location of screen
-	rcall	lcd_data		; lcd_data('+')
+	ACALL	lcd_data		; lcd_data('+')
 	ldi	r22, (LCD_LINE_LENGTH -1)
 	ldi	r24, ((LCD_LINES - 1) * PAGES_PER_LINE)
-	rcall	lcd_set_cursor		; lcd_set_cursor(((LCD_LINES - 1) * PAGES_PER_LINE), (LCD_LINE_LENGTH - 1))
+	ACALL	lcd_set_cursor		; lcd_set_cursor(((LCD_LINES - 1) * PAGES_PER_LINE), (LCD_LINE_LENGTH - 1))
 x822:
 #ifdef WITH_ROTARY_SWITCH
  	ldi	r24, lo8(SHORT_WAIT_TIME)	; 0x88
  	ldi	r25, hi8(SHORT_WAIT_TIME)	; 0x13
-        rcall   wait_for_key_ms		;wait_for_key_ms(SHORT_WAIT_TIME);     // wait until time is elapsed or key is pressed
+        ACALL   wait_for_key_ms		;wait_for_key_ms(SHORT_WAIT_TIME);     // wait until time is elapsed or key is pressed
 	cpse	r24, r1
 	rjmp	x855
 	lds	r24, rotary+incre
@@ -178,10 +184,10 @@ x855:
 	brne	x83a			; if ((current_line == (LCD_LINES - 1)) && (last_line_used == 1)) 
         ldi	r24, (LCD_LINES - 1)
 	ldi	r22, 0x00       ; 0
-        rcall   lcd_set_cursor		; lcd_set_cursor((LCD_LINES-1) * PAGES_PER_LINE,0)
-	rcall	lcd_clear_line
+        ACALL	lcd_set_cursor		; lcd_set_cursor((LCD_LINES-1) * PAGES_PER_LINE,0)
+	ACALL	lcd_clear_line
 x83a:
-	rcall   lcd_restore_position
+	ACALL   lcd_restore_position
 x83c:
 	pop	r28
 

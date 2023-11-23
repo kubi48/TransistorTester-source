@@ -119,9 +119,7 @@ Cyr_d,'o',Cyr_k,'y',Cyr_m,'e',Cyr_n,Cyr_t,'a',Cyr_c,'i',Cyr_ju,' ',
 
 Cyr_d,Cyr_i,Cyr_v,'.',' ',Cyr_n,'a',' ',
 'g','i','t','h','u','b','.','c','o','m','/',LCD_NO_SPACE,
-'m','i','k','r','o','c','o','n','t','r','o','l','l','e','r',LCD_NO_SPACE,
-'-','n','e','t','/','t','r','a','n','s','i','s','t','o','r',LCD_NO_SPACE,
-'t','e','s','t','e','r',' '
+'k','u','b','i','4','8'
   #endif  /* SHORT_UNCAL_MSG */
 ,0};
 

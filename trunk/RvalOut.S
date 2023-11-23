@@ -32,7 +32,10 @@
 /*  } */
 
 #define zero_reg r1
-#define RCALL rcall
+
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
 
  .GLOBAL RvalOut
  .func RvalOut
@@ -67,9 +70,9 @@ RvalOut:		; void RvalOut(uint8_t nrr)
 	sbrc	r18, 7		; minus bit set?
  	rjmp	ad1d8e 		; (inductor_lpre >= 0)
 	mov	r24,r16
-	ACALL	Rnum2pins;	; pins = Rnum2pins(nrr)
+	call	Rnum2pins;	; pins = Rnum2pins(nrr)
         mov	r22, r25
- 	ACALL	GetESR		; rr = GetESR(resis[nrr].ra,resis[nrr].rb);
+ 	call	GetESR		; rr = GetESR(resis[nrr].ra,resis[nrr].rb);
 ; 	movw	r22, r24
 ;        ldi	r24, 0
 ;        ldi	r25, 0
@@ -79,7 +82,7 @@ RvalOut:		; void RvalOut(uint8_t nrr)
 	ldi	r22, -2
 	ldi	r18, 3
 	ldi	r20, LCD_CHAR_OMEGA
-	RCALL	DisplayValue16	; DisplayValue16(rr,-2,LCD_OMEGA,3);
+	call	DisplayValue16	; DisplayValue16(rr,-2,LCD_OMEGA,3);
 	rjmp	ret_with_space
 ad1d8e:		; } else {
 #endif
@@ -88,9 +91,9 @@ ad1d8e:		; } else {
  	ldi	r16, 0x04	; DisplayValue(resis[nrr].rx,-1,LCD_CHAR_OMEGA,4);
 ;ad1d94:
  	ldi	r18, LCD_CHAR_OMEGA	; 244
- 	RCALL	DisplayValue
+ 	ACALL	DisplayValue
 ret_with_space:
- 	RCALL	lcd_space	; lcd_space();
+ 	ACALL	lcd_space	; lcd_space();
  	pop	r16
  	ret
  .endfunc

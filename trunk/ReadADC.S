@@ -21,9 +21,11 @@
 #define U_AVCC 4
 
 ;// assembler version of ReadADC.c
-;// ACALL is defined in config.h as rcall for ATmega8 and as call for ATmega168
 
-#define RCALL rcall
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
+
 
 #ifdef INHIBIT_SLEEP_MODE
 	.macro	StartADCwait
@@ -55,28 +57,28 @@
 ;unsigned int W5msReadADC(uint8_t Probe) 
 #ifdef INHIBIT_SLEEP_MODE
 W20msReadADC:
-	ACALL wait10ms;
+	ACALL  wait10ms;
 			;// runs to W10msReadADC
 W10msReadADC:
-	ACALL wait5ms;
+	ACALL  wait5ms;
 			;// runs to W5msReadADC
 W5msReadADC:
-	ACALL wait5ms;
-			;// runs directly to ReadADC, this will replace "ACALL ReadADC + ret"
+	ACALL  wait5ms;
+			;// runs directly to ReadADC, this will replace "call ReadADC + ret"
 #else
 W20msReadADC:
 	push	r24;
 	ldi	r24, 4;		/* 4 * 5ms */
-	RCALL	sleep_5ms;
+	ACALL 	sleep_5ms;
 	rjmp   to_read;
 W10msReadADC:
 	push	r24;
-	RCALL	sleep_10ms;
+	ACALL 	sleep_10ms;
 	rjmp   to_read;
 W5msReadADC:
 	push	r24;
 	ldi	r24, 1;		/* 1 * 5ms */
-	RCALL	sleep_5ms;
+	ACALL 	sleep_5ms;
 
 to_read:
 	pop	r24;
@@ -104,12 +106,12 @@ get_sample:
        	breq	no_ref_change			; if (Samples != ADCconfig.RefFlag) 
 	sts	ADCconfig+RefFlag, r30	; ADCconfig.RefFlag = Samples; /* update flag */
  #ifdef NO_AREF_CAP
-	RCALL	wait100us		; wait100us(); /* time for voltage stabilization */
+	ACALL	wait100us		; wait100us(); /* time for voltage stabilization */
  #else
   #ifdef INHIBIT_SLEEP_MODE
-	RCALL	wait10ms		; wait10ms(); /* long time for voltage stabilization */
+	ACALL	wait10ms		; wait10ms(); /* long time for voltage stabilization */
   #else
-	RCALL	sleep_10ms		; wait_about10ms()
+	ACALL	sleep_10ms		; wait_about10ms()
   #endif
  #endif		/* end NO_AREF_CAP */
 	StartADCwait                    ; // allways do one dummy read of ADC, 112us

@@ -6,7 +6,10 @@
 #include "config.h"
 #include <stdlib.h>
 
-#define RCALL rcall
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
+
 
  .GLOBAL sleep_5ms
  .func sleep_5ms
@@ -60,7 +63,7 @@ check_remain:
 	andi	r20, ((1<<CS12)|(1<<CS11)|(1<<CS10))	;
 	breq	do_sleep
 ;  timer 1 is running, don't use sleep
-	RCALL	wait5ms		; wait5ms();
+	ACALL	wait5ms		; wait5ms();
 	sbiw	r24, 1		; pause -= 1;
 	rjmp	wloop
 do_sleep:
@@ -97,7 +100,7 @@ set_cntr:
 
 #else
 ;    // restart delay ist too long, use normal delay of 5ms
-	RCALL	wait5ms		; wait5ms();	// wait5ms includes wdt_reset()
+	ACALL	wait5ms		; wait5ms();	// wait5ms includes wdt_reset()
 	sbiw	r24, 1		; pause -= 1;
 #endif
  	rjmp	wloop 

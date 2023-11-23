@@ -20,6 +20,9 @@
  .extern RHtab
  .section .text
  
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
 
 RefVoltage:
 

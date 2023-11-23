@@ -12,7 +12,6 @@
 
 
 	#define zero_reg r1
-	#define RCALL rcall
 
 	/* #include <avr/io.h> */
 	/* #include "Transistortester.h" */
@@ -24,6 +23,10 @@
 	/*       lcd_space();  */
 	/*    }  */
 	/* }  */
+
+; The text constant ACALL is defined in autoconf.h as rcall if FLASHEND is less or equal 0x1fff,
+; otherwise ACALL is defined as call
+; Please note, that call can be replaced with rcall by the avr-gcc optimizing option --relax !!
 
 	.GLOBAL mVAusgabe
         .extern DisplayValue
@@ -43,8 +46,8 @@
 		ld	r24, Z		; diodes.Voltage[nn]
 		ldd	r25, Z+1	; 0x01
 		ldi	r22, 0x03	; 3
-		RCALL	Display_mV	; Display_mV(diodes.Voltage[nn],3);
-		RCALL	lcd_space;	; lcd_space();
+		ACALL	Display_mV	; Display_mV(diodes.Voltage[nn],3);
+		ACALL	lcd_space;	; lcd_space();
 	ad1ca4:
 		ret
 	 .endfunc
@@ -80,17 +83,17 @@ UfAusgabe:
  	lds	r24, ResistorsFound;	0x0168
  	and	r24, r24
  	breq	ad1cbe; 	   if (ResistorsFound > 0) { 
- 	RCALL	lcd_space;	lcd_space();
+ 	ACALL	lcd_space;	lcd_space();
  	ldi	r24, LCD_CHAR_RESIS3;	0
- 	RCALL	lcd_data;      lcd_data(LCD_CHAR_RESIS3);	// special symbol or R
+ 	ACALL	lcd_data;      lcd_data(LCD_CHAR_RESIS3);	// special symbol or R
 ad1cbe:
- 	RCALL	lcd_line2;					//2. row
+ 	ACALL	lcd_line2;					//2. row
  	ldi	r24, lo8(Uf_str);	0xE9
  	ldi	r25, hi8(Uf_str);	0x01
 #ifdef USE_EEPROM
- 	RCALL	lcd_fix_string	; lcd_PGM_string(Uf_str);	//"Uf="
+ 	ACALL	lcd_fix_string	; lcd_PGM_string(Uf_str);	//"Uf="
 #else
- 	RCALL	lcd_pgm_string	; lcd_PGM_string(Uf_str);	//"Uf="
+ 	ACALL	lcd_pgm_string	; lcd_PGM_string(Uf_str);	//"Uf="
 #endif
  	mov	r24, r17
  	swap	r24
@@ -132,7 +135,7 @@ SerienDiodenAusgabe:
 
  	lds	r24, diode_sequence;	0x0102
  	andi	r24, 0x03	; second = diode_sequence & 3;
- 	RCALL	DiodeSymbol_ACpin	;  ->|-3
+ 	rcall	DiodeSymbol_ACpin	;  ->|-3
  	lds	r24, diode_sequence;	x0102
  	rcall	UfAusgabe	; UfAusgabe(diode_sequence);
     	ret
@@ -188,7 +191,7 @@ cat_first2:
 	rcall	DiodeSymbol_ApinCpin
 #endif
 diode_fin:
-	rcall	lcd_space
+	ACALL	lcd_space
 	pop	r28
 	ret
  .endfunc
@@ -200,7 +203,7 @@ DiodeSymbol_ApinCpin:
 	rcall	load_diodes_adr
 	push	r24
  	ld	r24, Z		;Anode
- 	RCALL	lcd_testpin	; lcd_testpin(diodes.Anode[nn]);
+ 	ACALL	lcd_testpin	; lcd_testpin(diodes.Anode[nn]);
 	pop	r24
 	rcall	DiodeSymbol_ACpin	; ->|-3
         ret
@@ -215,15 +218,15 @@ DiodeSymbol_ACpin:
  	ldi	r25, hi8(AnKat_str)	;0x03
   #ifdef USE_EEPROM
 	.extern lcd_fix_string
- 	RCALL	lcd_fix_string	; lcd_PGM_string(AnKat_str);	//"->|-"
+ 	ACALL	lcd_fix_string	; lcd_PGM_string(AnKat_str);	//"->|-"
   #else
 	.extern lcd_pgm_string
- 	RCALL	lcd_pgm_string	; lcd_PGM_string(AnKat_str);	//"->|-"
+ 	ACALL	lcd_pgm_string	; lcd_PGM_string(AnKat_str);	//"->|-"
   #endif
 	pop	r24
 	rcall	load_diodes_adr
 	ldd	r24, Z+6	; Cathode
- 	RCALL	lcd_testpin	; lcd_testpin(diodes.Cathode[nn]);
+ 	ACALL	lcd_testpin	; lcd_testpin(diodes.Cathode[nn]);
 	ret
  .endfunc
 
@@ -234,7 +237,7 @@ DiodeSymbol_CpinApin:
 	rcall	load_diodes_adr
 	push	r24
  	ldd	r24, Z+6	;Cathode
- 	RCALL	lcd_testpin	; lcd_testpin(diodes.Cathode[nn]);
+ 	ACALL	lcd_testpin	; lcd_testpin(diodes.Cathode[nn]);
 	pop	r24
 	rcall	DiodeSymbol_CApin	; -|<-3
         ret
@@ -249,14 +252,14 @@ DiodeSymbol_CApin:
  	ldi	r25, hi8(KatAn_str)	;0x03
   #ifdef USE_EEPROM
 	.extern lcd_fix_string
- 	RCALL	lcd_fix_string	; lcd_PGM_string(KatAn_str);	//"->|-"
+ 	ACALL	lcd_fix_string	; lcd_PGM_string(KatAn_str);	//"->|-"
   #else
 	.extern lcd_pgm_string
- 	RCALL	lcd_pgm_string	; lcd_PGM_string(KatAn_str);	//"->|-"
+ 	ACALL	lcd_pgm_string	; lcd_PGM_string(KatAn_str);	//"->|-"
   #endif
 	pop	r24
 	rcall	load_diodes_adr
 	ld	r24, Z		; Anode
- 	RCALL	lcd_testpin	; lcd_testpin(diodes.Anode[nn]);
+ 	ACALL	lcd_testpin	; lcd_testpin(diodes.Anode[nn]);
 	ret
  .endfunc
