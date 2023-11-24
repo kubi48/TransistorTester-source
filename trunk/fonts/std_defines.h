@@ -161,43 +161,46 @@
   #define c_caron       0x82 /* e8 */
   #define d_caron       0x83 /* ef */
   #define e_acute       0x84 /* e9 */
-  #define i_acute       0x85 /* ed */
-  #define l_acute       0x86 /* e5 */
-  #define l_caron       0x87 /* b5 */
-  #define n_caron       0x88 /* f2 */
-  #define o_acute       0x89 /* f3 */
-  #define o_circ        0x8a /* f4 */
-  #define r_acute       0x8b /* e0 */
-  #define s_caron       0x8c /* b9 */
-  #define t_caron       0x8d /* bb */
-  #define u_acute       0x8e /* fa */
-  #define y_acute       0x8f /* fd */
-  #define z_caron       0x90 /* b9 */
+  #define e_caron       0x85 /* ec */
+  #define i_acute       0x86 /* ed */
+  #define l_acute       0x87 /* e5 */
+  #define l_caron       0x88 /* b5 */
+  #define n_caron       0x89 /* f2 */
+  #define o_acute       0x8a /* f3 */
+  #define o_circ        0x8b /* f4 */
+  #define r_acute       0x8c /* e0 */
+  #define s_caron       0x8d /* b9 */
+  #define t_caron       0x8e /* bb */
+  #define u_acute       0x8f /* fa */
+  #define y_acute       0x90 /* fd */
+  #define z_caron       0x91 /* b9 */
   #ifdef WITH_CAPITAL_SPECIALS
-   #define A_acute       0x91 /* c1 */
-   #define A_uml         0x92 /* c4 */
-   #define C_caron       0x93 /* c8 */
-   #define D_caron       0x94 /* cf */
-   #define E_acute       0x95 /* c9 */
-   #define I_acute       0x96 /* cd */
-   #define L_acute       0x97 /* c5 */
-   #define L_caron       0x98 /* a5 */
-   #define N_caron       0x99 /* d2 */
-   #define O_acute       0x9a /* d3 */
-   #define O_circ        0x9b /* d4 */
-   #define R_acute       0x9c /* c0 */
-   #define S_caron       0x9d /* a9 */
-   #define T_caron       0x9e /* ab */
-   #define U_acute       0x9f /* da */
-   #define Y_acute       0xa0 /* dd */
-   #define Z_caron       0xa1 /* ae */
-   #define CHAR_COUNT 0xa2
+   #define A_acute       0x92 /* c1 */
+   #define A_uml         0x93 /* c4 */
+   #define C_caron       0x94 /* c8 */
+   #define D_caron       0x95 /* cf */
+   #define E_acute       0x96 /* c9 */
+   #define E_caron       0x97 /* cc */
+   #define I_acute       0x98 /* cd */
+   #define L_acute       0x99 /* c5 */
+   #define L_caron       0x9a /* a5 */
+   #define N_caron       0x9b /* d2 */
+   #define O_acute       0x9c /* d3 */
+   #define O_circ        0x9d /* d4 */
+   #define R_acute       0x9e /* c0 */
+   #define S_caron       0x9f /* a9 */
+   #define T_caron       0xa0 /* ab */
+   #define U_acute       0xa1 /* da */
+   #define Y_acute       0xa2 /* dd */
+   #define Z_caron       0xa3 /* ae */
+   #define CHAR_COUNT 0xa4
   #else
    #define A_acute       a_acute
    #define A_uml         a_uml
    #define C_caron       c_caron
    #define D_caron       d_caron
    #define E_acute       e_acute
+   #define E_caron       e_caron
    #define I_acute       i_acute
    #define L_acute       l_acute
    #define L_caron       l_caron
@@ -210,7 +213,7 @@
    #define U_acute       u_acute
    #define Y_acute       y_acute
    #define Z_caron       z_caron
-   #define CHAR_COUNT 0x91
+   #define CHAR_COUNT 0x92
   #endif
  #elif defined LANG_SERBIAN || LANG_CROATIAN || LANG_BOSNIAN
   #define c_acute	0x80 /* e6 */

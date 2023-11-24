@@ -76,36 +76,38 @@
       PIX_c_caron            /* 0x82 c_caron  e8 */
       PIX_d_caron            /* 0x83 d_caron  ef */
       PIX_e_acute            /* 0x84 e_acute  e9 */
-      PIX_i_acute            /* 0x85 i_acute  ed */
-      PIX_l_acute            /* 0x86 l_acute  e5 */
-      PIX_l_caron            /* 0x87 l_caron  b5 */
-      PIX_n_caron            /* 0x88 n_caron  f2 */
-      PIX_o_acute            /* 0x89 o_acute  f3 */
-      PIX_o_circ             /* 0x8a o_circ   f4 */
-      PIX_r_acute            /* 0x8b r_acute  e0 */
-      PIX_s_caron            /* 0x8c s_caron  b9 */
-      PIX_t_caron            /* 0x8d t_caron  bb */
-      PIX_u_acute            /* 0x8e u_acute  fa */
-      PIX_y_acute            /* 0x8f y_acute  fd */
-      PIX_z_caron            /* 0x90 z_caron  b9 */
+      PIX_e_caron	     /* 0x85 e_caron  ec */
+      PIX_i_acute            /* 0x86 i_acute  ed */
+      PIX_l_acute            /* 0x87 l_acute  e5 */
+      PIX_l_caron            /* 0x88 l_caron  b5 */
+      PIX_n_caron            /* 0x89 n_caron  f2 */
+      PIX_o_acute            /* 0x8a o_acute  f3 */
+      PIX_o_circ             /* 0x8b o_circ   f4 */
+      PIX_r_acute            /* 0x8c r_acute  e0 */
+      PIX_s_caron            /* 0x8d s_caron  b9 */
+      PIX_t_caron            /* 0x8e t_caron  bb */
+      PIX_u_acute            /* 0x8f u_acute  fa */
+      PIX_y_acute            /* 0x90 y_acute  fd */
+      PIX_z_caron            /* 0x91 z_caron  b9 */
   #ifdef WITH_CAPITAL_SPECIALS
-      PIX_A_acute            /* 0x91 A_acute  c1 */
-      PIX_A_uml              /* 0x92 A_uml    c4 */
-      PIX_C_caron            /* 0x93 C_caron  c8 */
-      PIX_D_caron            /* 0x94 D_caron  cf */
-      PIX_E_acute            /* 0x95 E_acute  c9 */
-      PIX_I_acute            /* 0x96 I_acute  cd */
-      PIX_L_acute            /* 0x97 L_acute  c5 */
-      PIX_L_caron            /* 0x98 L_caron  a5 */
-      PIX_N_caron            /* 0x99 N_caron  d2 */
-      PIX_O_acute            /* 0x9a O_acute  d3 */
-      PIX_O_circ             /* 0x9b O_circ   d4 */
-      PIX_R_acute            /* 0x9c R_acute  c0 */
-      PIX_S_caron            /* 0x9d S_caron  a9 */
-      PIX_T_caron            /* 0x9e T_caron  ab */
-      PIX_U_acute            /* 0x9f U_acute  da */
-      PIX_Y_acute            /* 0xa0 Y_acute  dd */
-      PIX_Z_caron            /* 0xa1 Z_caron  ae */
+      PIX_A_acute            /* 0x92 A_acute  c1 */
+      PIX_A_uml              /* 0x93 A_uml    c4 */
+      PIX_C_caron            /* 0x94 C_caron  c8 */
+      PIX_D_caron            /* 0x95 D_caron  cf */
+      PIX_E_acute            /* 0x96 E_acute  c9 */
+      PIX_E_caron	     /* 0x97 E_caron  cc */
+      PIX_I_acute            /* 0x98 I_acute  cd */
+      PIX_L_acute            /* 0x99 L_acute  c5 */
+      PIX_L_caron            /* 0x9a L_caron  a5 */
+      PIX_N_caron            /* 0x9b N_caron  d2 */
+      PIX_O_acute            /* 0x9c O_acute  d3 */
+      PIX_O_circ             /* 0x9d O_circ   d4 */
+      PIX_R_acute            /* 0x9e R_acute  c0 */
+      PIX_S_caron            /* 0x9f S_caron  a9 */
+      PIX_T_caron            /* 0xa0 T_caron  ab */
+      PIX_U_acute            /* 0xa1 U_acute  da */
+      PIX_Y_acute            /* 0xa2 Y_acute  dd */
+      PIX_Z_caron            /* 0xa3 Z_caron  ae */
   #endif
  
  
