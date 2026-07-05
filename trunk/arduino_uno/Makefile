@@ -258,8 +258,8 @@ INHIBIT_SLEEP_MODE = 1
 #AVRDUDE_BAUD = -b 115200 -D
 # setting for ARDUINO UNO, requires bootloader
 PROGRAMMER=arduino 
-#PORT = /dev/ttyUSB0
-PORT = /dev/ttyACM0
+PORT = /dev/ttyUSB0
+#PORT = /dev/ttyACM0
 BitClock=5.0
 AVRDUDE_BAUD = -b $(BAUD_RATE)
 # ********************** end of selectable options
