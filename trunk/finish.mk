@@ -135,7 +135,7 @@ $(TARGET): directories $(OBJFILES)
 size: ${TARGET}
 	@echo
 	@echo $(OP_MHZ) MHz operation configured.
-	@$(AVR_TOOL/PATH)avr-size -C --mcu=${MCU} ${TARGET}
+	@$(AVR_TOOL/PATH)avr-objdump -Pmem-usage ${TARGET}
 	@rm -rf $(OBJDIR)
 
 ## Clean target
